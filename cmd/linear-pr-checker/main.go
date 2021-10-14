@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -12,6 +11,7 @@ func main() {
 	fmt.Printf("GITHUB_REPOSITORY %s", os.Getenv("GITHUB_REPOSITORY"))
 	fmt.Printf("GITHUB_EVENT_PATH  %s", os.Getenv("GITHUB_EVENT_PATH"))
 	fmt.Printf("GITHUB_REPOSITORY_OWNER %s", os.Getenv("GITHUB_REPOSITORY_OWNER"))
+	fmt.Printf("GITHUB_REF  %s", os.Getenv("GITHUB_REF"))
 
 	// Open our jsonFile
 	jsonFile, err := os.Open(os.Getenv("GITHUB_EVENT_PATH"))
@@ -25,8 +25,5 @@ func main() {
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var result map[string]interface{}
-	json.Unmarshal([]byte(byteValue), &result)
-
-	fmt.Println(result["users"])
+	fmt.Println(byteValue)
 }
