@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -23,7 +24,8 @@ func main() {
 	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
 
+	var result map[string]interface{}
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	fmt.Println(byteValue)
+	fmt.Println(json.Unmarshal(byteValue, &result))
 }
