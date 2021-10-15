@@ -18,7 +18,7 @@ func main() {
 	repo := os.Getenv("GITHUB_REPOSITORY")
 	prid, _ := strconv.Atoi(parsePullRequestId(os.Getenv("GITHUB_REF")))
 	justrepo := repo[strings.LastIndex(repo, "/")+1:]
-	token := os.Getenv("GITHUB_TOKEN")
+	token := os.Getenv("INPUT_GITHUB_TOKEN")
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
