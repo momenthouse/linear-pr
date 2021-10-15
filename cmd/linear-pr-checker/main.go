@@ -31,10 +31,10 @@ func main() {
 	if err != nil {
 		println(err.Error())
 	}
-	branch := pullrequest.Head.Ref
+	title := pullrequest.Title
 
-	println(*branch)
-	issueId, err := praseIssueFromBranch(*branch)
+	println(*title)
+	issueId, err := praseIssueFromBranch(*title)
 	if err != nil {
 		println(err.Error())
 		os.Exit(1)
