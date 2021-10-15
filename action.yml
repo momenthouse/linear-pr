@@ -6,6 +6,10 @@ inputs:
     description: 'Who to greet'
     required: true
     default: 'World'
+  github_token:
+    description: Github's token
+    required: false
+    default: ${{ github.token }}
 outputs:
   time: # id of output
     description: 'The time we greeted you'

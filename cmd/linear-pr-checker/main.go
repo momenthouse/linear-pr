@@ -1,31 +1,61 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"context"
+	"errors"
 	"os"
+	"regexp"
+	"strconv"
+	"strings"
+
+	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 )
 
 func main() {
-	fmt.Printf("Hello %s", os.Args[1])
-	fmt.Printf("GITHUB_REPOSITORY %s", os.Getenv("GITHUB_REPOSITORY"))
-	fmt.Printf("GITHUB_EVENT_PATH  %s", os.Getenv("GITHUB_EVENT_PATH"))
-	fmt.Printf("GITHUB_REPOSITORY_OWNER %s", os.Getenv("GITHUB_REPOSITORY_OWNER"))
-	fmt.Printf("GITHUB_REF  %s", os.Getenv("GITHUB_REF"))
 
-	// Open our jsonFile
-	jsonFile, err := os.Open(os.Getenv("GITHUB_EVENT_PATH"))
-	// if we os.Open returns an error then handle it
+	owner := os.Getenv("GITHUB_REPOSITORY_OWNER")
+	repo := os.Getenv("GITHUB_REPOSITORY")
+	prid, _ := strconv.Atoi(parsePullRequestId(os.Getenv("GITHUB_REF")))
+	justrepo := repo[strings.LastIndex(repo, "/")+1:]
+	token := os.Getenv("GITHUB_TOKEN")
+
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: token},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+	client := github.NewClient(tc)
+
+	pullrequest, _, err := client.PullRequests.Get(ctx, owner, justrepo, prid)
 	if err != nil {
-		fmt.Println(err)
+		println(err.Error())
 	}
-	fmt.Println("Successfully Opened users.json")
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
+	branch := pullrequest.Head.Ref
 
-	var result map[string]interface{}
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	println(*branch)
+	issueId, err := praseIssueFromBranch(*branch)
+	if err != nil {
+		println(err.Error())
+	}
 
-	fmt.Println(json.Unmarshal(byteValue, &result))
+	print(issueId)
+}
+
+func parsePullRequestId(ref string) string {
+	var re = regexp.MustCompile(`[-]?\d[\d,]*[\.]?[\d{2}]*`)
+	return re.FindString(ref)
+}
+
+func praseIssueFromBranch(input string) (string, error) {
+	re := regexp.MustCompile("^(\\w*)(?:\\((.*)\\))?\\:\\s(.*)$")
+	matches := re.FindAllStringSubmatch(input, -1)
+	for _, match := range matches {
+		for i, s := range match {
+			if i == 2 && s != "" {
+				return s, nil
+			}
+		}
+	}
+	return "", errors.New("missing linear ticket")
 }
