@@ -37,6 +37,7 @@ func main() {
 	issueId, err := praseIssueFromBranch(*branch)
 	if err != nil {
 		println(err.Error())
+		os.Exit(1)
 	}
 
 	print(issueId)
