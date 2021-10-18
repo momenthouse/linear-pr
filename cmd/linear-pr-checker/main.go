@@ -31,10 +31,10 @@ func main() {
 	if err != nil {
 		println(err.Error())
 	}
-	title := pullrequest.Title
+	branch := pullrequest.Head.Ref
 
-	println(*title)
-	issueId, err := praseIssueFromBranch(*title)
+	println(*branch)
+	issueId, err := praseIssueFromBranch(*branch)
 	if err != nil {
 		println(err.Error())
 		os.Exit(1)
@@ -49,7 +49,7 @@ func parsePullRequestId(ref string) string {
 }
 
 func praseIssueFromBranch(input string) (string, error) {
-	re := regexp.MustCompile("^(\\w*)(?:\\((.*)\\))?\\:\\s(.*)$")
+	re := regexp.MustCompile(`(.*)\/([a-zA-z]{2,}-\d+)`)
 	matches := re.FindAllStringSubmatch(input, -1)
 	for _, match := range matches {
 		for i, s := range match {
