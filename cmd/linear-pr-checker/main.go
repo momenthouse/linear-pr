@@ -1,13 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
-	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -45,11 +40,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	if !isValidIssue(issueId) {
-		println("Not a Valid Issue.")
-		os.Exit(1)
-	}
-
 	print(issueId)
 }
 
@@ -69,43 +59,4 @@ func praseIssueFromBranch(input string) (string, error) {
 		}
 	}
 	return "", errors.New("missing linear ticket")
-}
-
-func isValidIssue(issueId string) bool {
-	query := fmt.Sprintf("query Issue {  issue(id: \"%s\") {    id    title   }}", issueId)
-	url := "https://api.linear.app/graphql"
-	method := "POST"
-	values := map[string]interface{}{"query": query}
-	json_data, err := json.Marshal(values)
-
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(json_data))
-
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", os.Getenv("LINEAR_TOKEN"))
-	fmt.Println(os.Getenv("INPUT_LINEAR_TOKEN"))
-
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-	defer res.Body.Close()
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil || strings.Contains(string(body), "error") {
-		fmt.Println(err)
-		return false
-	}
-	fmt.Println(string(body))
-	return true
 }
