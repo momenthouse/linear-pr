@@ -102,7 +102,7 @@ func isValidIssue(issueId string) bool {
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
+	if err != nil || strings.Contains(string(body), "error") {
 		fmt.Println(err)
 		return false
 	}
