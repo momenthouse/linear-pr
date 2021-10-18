@@ -92,6 +92,7 @@ func isValidIssue(issueId string) bool {
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", os.Getenv("LINEAR_TOKEN"))
+	fmt.Println(os.Getenv("INPUT_LINEAR_TOKEN"))
 
 	res, err := client.Do(req)
 	if err != nil {

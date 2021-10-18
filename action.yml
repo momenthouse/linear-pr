@@ -10,6 +10,10 @@ inputs:
     description: Github's token
     required: false
     default: ${{ github.token }}
+  linear_token:
+    description: Github's token
+    required: false
+    default: ${{ secrets.LINEAR_TOKEN }}
 outputs:
   time: # id of output
     description: 'The time we greeted you'
