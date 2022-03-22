@@ -34,7 +34,7 @@ func main() {
 	branch := pullrequest.Head.Ref
 
 	println(*branch)
-	issueId, err := praseIssueFromBranch(*branch)
+	issueId, err := parseeIssueFromBranch(*branch)
 	if err != nil {
 		println(err.Error())
 		os.Exit(1)
@@ -48,7 +48,7 @@ func parsePullRequestId(ref string) string {
 	return re.FindString(ref)
 }
 
-func praseIssueFromBranch(input string) (string, error) {
+func parseeIssueFromBranch(input string) (string, error) {
 	re := regexp.MustCompile(`(.*)\/([a-zA-z]{2,}-\d+)`)
 	matches := re.FindAllStringSubmatch(input, -1)
 	for _, match := range matches {
@@ -64,10 +64,10 @@ func praseIssueFromBranch(input string) (string, error) {
 	matches = re.FindAllStringSubmatch(input, -1)
 	for _, match := range matches {
 		for i, s := range match {
-			if i == 2 && s != "" {
+			if i == 1 && s != "" {
 				return s, nil
 			}
 		}
 	}
-	return "", errors.New("missing linear ticket")
+	return "", errors.New("missing linear or jira ticket")
 }
