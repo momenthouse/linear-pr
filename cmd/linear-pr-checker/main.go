@@ -58,5 +58,16 @@ func praseIssueFromBranch(input string) (string, error) {
 			}
 		}
 	}
+
+	//check for jira.
+	re = regexp.MustCompile(`([a-zA-z]{2,}-\d+)`)
+	matches = re.FindAllStringSubmatch(input, -1)
+	for _, match := range matches {
+		for i, s := range match {
+			if i == 2 && s != "" {
+				return s, nil
+			}
+		}
+	}
 	return "", errors.New("missing linear ticket")
 }
